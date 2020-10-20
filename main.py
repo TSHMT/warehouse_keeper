@@ -18,8 +18,10 @@ from threading import Thread
 SCENE_TITLE = 0
 SCENE_PLAY = 1
 SCENE_CLEAR = 2
-BOX={0:[[48,32,0]]}
-TILEMAP={0:[0,0,0,0,0,16,16,0]}
+PLAYER={0:[16,48],1:[16,16],2:[16,16],}
+BOX={0:[[32,48,0]],1:[[80,32,0]],2:[[64,32,0]],}
+TILEMAP={0:[0,0,0,0,0,16,16,0],1:[0,0,0,16,0,16,16,0],2:[0,0,0,32,0,16,16,0],}
+SCREEN_SIZE=255
 
 class App:
     #
@@ -34,16 +36,18 @@ class App:
         #場面変数
         self.scene=SCENE_PLAY
         #ステージカウント、ステージ構成変数
-        self.stage_count=0
+        self.stage_count=1
+        self.stage_pogition_x = self.stage_count*16
+        self.stage_pogition_y = (self.stage_count//16)*16
         self.box_list = BOX[self.stage_count]
-        self.tilemap_list= TILEMAP[self.stage_count]
+        self.tilemap_list = TILEMAP[self.stage_count]
         #移動系変数
         self.move_count=0
         self.move_x=0
         self.move_y=0
         #プレイヤー変数
-        self.player_x = 16
-        self.player_y = 16
+        self.player_x = PLAYER[self.stage_count][0]
+        self.player_y = PLAYER[self.stage_count][1]
         self.player_img = 0
         #クリア判定変数
         self.clear_count=0
@@ -59,7 +63,7 @@ class App:
             
             #現在のタイルマップ上の座標からの移動先の座標は、オブジェクト番号64かどうかを判定する。
             #もしオブジェクト番号64ならばムーブカウントを強制的に0にして移動できなくする。
-            if pyxel.tilemap(0).get(math.floor(self.player_x/8)+self.move_x*2, math.floor(self.player_y/8)+self.move_y*2) == 64:
+            if pyxel.tilemap(0).get(math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x, math.floor(self.player_y/8)+self.move_y*2)+self.stage_pogition_y == 64:
                 self.move_count=0
 
             for i in self.box_list:
@@ -68,7 +72,7 @@ class App:
                     i[2] = 1
                     for m in self.box_list:
                         #プレイヤーが押そうとした箱の移動方向に箱がある、もしくはプレイヤーが押そうとした箱の移動方向に壁がある(タイルマップからデータを取得して判断)なら箱もプレイヤーも移動しない
-                        if (i[0]+self.move_x*16 == m[0]) and (i[1]+self.move_y*16 == m[1]) or (pyxel.tilemap(0).get(math.floor(i[0]/8)+self.move_x*2, math.floor(i[1]/8)+self.move_y*2) == 64):
+                        if (i[0]+self.move_x*16 == m[0]) and (i[1]+self.move_y*16 == m[1]) or (pyxel.tilemap(0).get(math.floor(i[0]/8)+self.move_x*2+self.stage_pogition_x, math.floor(i[1]/8)+self.move_y*2+self.stage_pogition_y) == 64):
                             i[2]=0
                             self.move_count=0
                             break
@@ -131,9 +135,8 @@ class App:
             thread_clear = Thread(target=self.draw_clear_scene,args=())
             thread_time.start()
             thread_clear.start()
-
         for i in self.box_list:
-            if pyxel.tilemap(0).get(round(i[0]/8),round(i[1]/8)) == 130:
+            if pyxel.tilemap(0).get(round(i[0]/8)+self.stage_pogition_x,round(i[1]/8)+self.stage_pogition_y) == 130:
                 pyxel.blt(i[0],i[1],0,32,32,16,16,0)
                 self.clear_count += 1
                 if self.clear_count == len(self.box_list):
