@@ -17,13 +17,14 @@ from threading import Thread
 #3.ローカル関数、ローカル変数は全て小文字
 
 #グローバル変数の設定
+#ボックスステータスは[X,Y,移動フラグ,ゴールフラグ]、タイルマップは後々に１ステージ２画面構成になるかもしれないので、辞書にした。
+
 SCENE_NEXT = 0
 SCENE_PLAY = 1
 SCENE_CLEAR = 2
-PLAYER={0:[16,48],1:[16,16],2:[16,16],3:[16,16],4:[16,16],5:[48,16],6:[32,16],7:[16,16],}
-BOX={0:[[32,48,0]],1:[[80,32,0]],2:[[64,32,0]],3:[[80,32,0]],4:[[48,48,0]],5:[[48,48,0]],6:[[32,48,0]],7:[[48,96,0],[48,16,0]],}
-BOX={0:[[32,48,0,0]],1:[[80,32,0,0]],2:[[64,32,0,0]],3:[[80,32,0,0]],4:[[48,48,0,0]],5:[[48,48,0,0]],6:[[32,48,0,0]],7:[[48,96,0,0],[48,16,0,0]],}
-TILEMAP={0:[0,0,0,0,0,16,16,0],1:[0,0,0,16,0,16,16,0],2:[0,0,0,32,0,16,16,0],3:[0,0,0,48,0,16,16,0],4:[0,0,0,64,0,16,16,0],5:[0,0,0,80,0,16,16,0],6:[0,0,0,96,0,16,16,0],7:[0,0,0,112,0,16,16,0],}
+PLAYER={0:[16,48],1:[16,16],2:[16,16],3:[16,16],4:[16,16],5:[48,16],6:[32,16],7:[16,16],8:[16,16],}
+BOX={0:[[32,48,0,0]],1:[[80,32,0,0]],2:[[64,32,0,0]],3:[[80,32,0,0]],4:[[48,48,0,0]],5:[[48,48,0,0]],6:[[32,48,0,0]],7:[[48,96,0,0],[48,16,0,0]],8:[[32,48,0,0],[80,48,0,0]],}
+TILEMAP={0:[0,0,0,0,0,16,16,0],1:[0,0,0,16,0,16,16,0],2:[0,0,0,32,0,16,16,0],3:[0,0,0,48,0,16,16,0],4:[0,0,0,64,0,16,16,0],5:[0,0,0,80,0,16,16,0],6:[0,0,0,96,0,16,16,0],7:[0,0,0,112,0,16,16,0],8:[0,0,0,128,0,16,16,0],}
 SCREEN_SIZE=255
 
 class GAMEMODE(Enum):
@@ -47,8 +48,7 @@ class App:
         self.scene = GAMEMODE.Title
         
         #ステージカウント
-        self.stage_count=5
-        #self.stage_count=-1
+        self.stage_count=-1
         self.player_img = 0
         self.clear=SCENE_PLAY
 
@@ -115,7 +115,8 @@ class App:
         self.player_y = list(PLAYER[self.stage_count])[1]
         #クリア判定変数
         self.clear_count=0
-        time.sleep(1)
+        time.sleep(2)
+        pyxel.playm(0, loop=True)
         self.scene = GAMEMODE.Main
 
     def update_main(self):
@@ -126,6 +127,7 @@ class App:
             #リスタート
             if pyxel.btn(pyxel.KEY_SPACE):
                 self.stage_count-=1
+                pyxel.stop()
                 self.scene = GAMEMODE.Skit
         #キャラクター操作系
         if self.move_count==0:
@@ -155,6 +157,7 @@ class App:
         #次ステージ向かう系
         if self.clear_count >= len(self.box_list)+90:
             self.clear=SCENE_PLAY
+            pyxel.stop()
             self.scene = GAMEMODE.Skit
 
     #画面描画系関数
@@ -191,7 +194,7 @@ class App:
         #MAPの読込み
         pyxel.bltm(*self.tilemap_list)
         if self.clear == SCENE_CLEAR:
-            pyxel.text(43,56,"GAME CLEAR!",pyxel.frame_count % 16)
+            pyxel.text(43,56,"STAGE CLEAR!",pyxel.frame_count % 16)
             self.clear_count += 1
         for i in self.box_list:
             if pyxel.tilemap(0).get(round(i[0]/8)+self.stage_pogition_x,round(i[1]/8)+self.stage_pogition_y) == 130:
