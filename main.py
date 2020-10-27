@@ -30,15 +30,15 @@ SCENE_CLEAR = 2
 PLAYER={0:[16,48],1:[16,16],2:[16,16],3:[16,16],4:[16,16],5:[32,16],\
         6:[48,16],7:[32,16],8:[16,16],9:[48,16],10:[16,32],\
         11:[16,16],12:[16,16],13:[16,96],14:[16,16],15:[16,16],\
-        16:[16,16],}
+        16:[16,16],17:[16,16],}
 BOX={0:[[32,48,0,0,0,0]],1:[[80,32,0,0,0,0]],2:[[64,32,0,0,0,0]],3:[[32,48,0,0,0,0]],4:[[32,64,0,0,0,0]],5:[[48,32,0,0,0,0]],\
         6:[[48,48,0,0,0,0]],7:[[32,48,0,0,0,0]],8:[[48,16,0,0,0,0],[48,96,0,0,0,0]],9:[[32,64,0,0,0,0],[80,64,0,0,0,0]],10:[[48,32,0,0,0,0]],\
         11:[[32,48,0,0,0,0]],12:[[32,32,0,0,0,0]],13:[[32,80,0,0,0,0]],14:[[80,32,0,0,0,0]],15:[[64,32,0,0,0,0]],\
-        16:[[64,32,0,0,0,0]],}
+        16:[[64,32,0,0,0,0],[176,80,0,0,0,0]],17:[[64,32,0,0,0,0],[176,64,0,0,0,0]],}
 TILEMAP={0:[0,0,0,0,0,16,16,0],1:[0,0,0,16,0,16,16,0],2:[0,0,0,32,0,16,16,0],3:[0,0,0,48,0,16,16,0],4:[0,0,0,64,0,16,16,0],5:[0,0,0,80,0,16,16,0],\
         6:[0,0,0,96,0,16,16,0],7:[0,0,0,112,0,16,16,0],8:[0,0,0,128,0,16,16,0],9:[0,0,0,144,0,16,16,0],10:[0,0,0,160,0,16,16,0],\
         11:[0,0,0,176,0,16,16,0],12:[0,0,0,192,0,16,16,0],13:[0,0,0,208,0,16,16,0],14:[0,0,0,224,0,16,16,0],15:[0,0,0,240,0,16,16,0],\
-        16:[0,0,0,0,16,16,16,0],}
+        16:[0,0,0,0,16,16,16,0],17:[0,0,0,32,16,16,16,0],}
 SCREEN_SIZE=255
 
 class GAMEMODE(Enum):
@@ -82,35 +82,60 @@ class App:
             #もしオブジェクト番号64ならばムーブカウントを強制的に0にして移動できなくする。
             if pyxel.tilemap(0).get(math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x, math.floor(self.player_y/8)+self.move_y*2+self.stage_pogition_y) in [ 64,65 ]:
                 self.move_count=0
-            #クリア時、キャラが動けないようにする。
+            #ステージクリア後はキャラが動けないようにする。
             if self.clear_count >= len(self.box_list):
                 self.move_count=0
 
             #画面スクロール系
+            #スクロール後、プレイヤーと箱の座標をどう処理するか
             if (math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x) >= self.stage_pogition_x+16:
                 self.tilemap_list[3] += 16
                 self.stage_pogition_x += 16
                 self.player_x = -16
                 for i in self.box_list:
-                    if 128 in i and i[4] == 1:
+                    if i[0] == 128 and i[4] == 1:
                         i[0]=0
                         i[4]=0
                     elif i[4] == 0 and i[0] < 128:
                         i[0] += 128
                     elif i[4] == 0 and i[0] >= 128:
                         i[0] -= 128
+            elif (math.floor(self.player_y/8)+self.move_y*2+self.stage_pogition_y) >= self.stage_pogition_y+16:
+                self.tilemap_list[4] += 16
+                self.stage_pogition_y += 16
+                self.player_y = -16
+                for i in self.box_list:
+                    if i[1] == 128 and i[5] == 1:
+                        i[1]=0
+                        i[5]=0
+                    elif i[5] == 0 and i[1] < 128:
+                        i[1] += 128
+                    elif i[5] == 0 and i[1] >= 128:
+                        i[1] -= 128
             elif (math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x) < self.stage_pogition_x:
                 self.tilemap_list[3] -= 16
                 self.stage_pogition_x -= 16
                 self.player_x = +128
                 for i in self.box_list:
-                    if -16 in i and i[4] == 1:
+                    if i[0] == -16 and i[4] == 1:
                         i[0]=112
                         i[4]=0
                     elif i[4] == 0 and i[0] < 128:
                         i[0] += 128
                     elif i[4] == 0 and i[0] >= 128:
                         i[0] -= 128
+            elif (math.floor(self.player_y/8)+self.move_y*2+self.stage_pogition_y) < self.stage_pogition_y:
+                self.tilemap_list[4] -= 16
+                self.stage_pogition_y -= 16
+                self.player_y = +128
+                for i in self.box_list:
+                    if i[1] == -16 and i[5] == 1:
+                        i[1]=112
+                        i[5]=0
+                    elif i[5] == 0 and i[1] < 128:
+                        i[1] += 128
+                    elif i[5] == 0 and i[1] >= 128:
+                        i[1] -= 128
 
             for i in self.box_list:
                 #進行方向に箱があればクラス変数moveをTrueにする
@@ -145,10 +170,12 @@ class App:
         #変数の初期化をここで行う。
         #各種変数のセット
         self.stage_count+=1
-        self.stage_pogition_x = (self.stage_count-((self.stage_count//16)*16))*16
-        self.stage_pogition_y = (self.stage_count//16)*16
+#        self.stage_pogition_x = (self.stage_count-((self.stage_count//16)*16))*16
+#        self.stage_pogition_y = (self.stage_count//16)*16
         self.box_list = copy.deepcopy(BOX[self.stage_count])
         self.tilemap_list = copy.deepcopy(TILEMAP[self.stage_count])
+        self.stage_pogition_x = copy.copy(self.tilemap_list[3])
+        self.stage_pogition_y = copy.copy(self.tilemap_list[4])
         #移動系変数
         self.move_count=0
         self.move_x=0
@@ -173,7 +200,6 @@ class App:
         if self.clear_count < len(self.box_list):
             #リスタート
             if pyxel.btn(pyxel.KEY_SPACE):
-
                 self.stage_count-=1
                 pyxel.stop()
                 self.scene = GAMEMODE.Skit
@@ -280,8 +306,10 @@ class App:
                 if self.clear_count == len(self.box_list):
                     self.clear=SCENE_CLEAR
             else:
-                if 128 in i or -16 in i:
+                if i[0] == 128 or i[0] == -16:
                     i[4] = 1
+                elif i[1] == 128 or i[1] == -16:
+                    i[5] = 1
                 else:
                     pyxel.blt(i[0],i[1],0,0,32,16,16,0)
         if self.player_img <= 1:
