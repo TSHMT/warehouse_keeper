@@ -9,10 +9,11 @@
     <p>使用ソフト</p><br>
     <p>　python 3.7.6</p><br>
     <p>使用モジュール</p><br>
-    <p><a href="https://github.com/kitao/pyxel">
-      &emsp;pyxel<br>
-      &emsp;※本ゲームを遊ぶにはpyxelと関連パッケージのインストールが必要です<br>
-      &emsp;&emsp;リンク先をご参照ください。<br>
+    <p><a href="https://github.com/kitao/pyxel">&emsp;pyxel</a><br>
+      <a>
+        &emsp;※本ゲームを遊ぶにはpyxelと関連パッケージのインストールが必要です<br>
+        &emsp;&emsp;リンク先をご参照ください。<br>
+      </a>
     </a></p><br>
   <li><h2>目的・動機</h2></li>
     <p>
