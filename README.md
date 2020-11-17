@@ -7,7 +7,7 @@
     <p>使用ソフト</p><br>
     <p>　python 3.7.6</p><br>
     <p>使用モジュール</p><br>
-    <p><a href="https://github.com/kitao/pyxel">　pyxel</a></p><br>
+    <p><a href="https://github.com/kitao/pyxel">&emsp;pyxel</a></p><br>
   
   <li><h2>目的・動機</h2></li>
     <p>
