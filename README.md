@@ -1,13 +1,13 @@
 <ul>
   <li><h2>アプリケーション名</h2></li>
     <p>倉庫番風ゲーム</p>
-  
+    <p></p>
+ 
   <li><h2>使用技術</h2></li>
     <p>使用ソフト</p><br>
     <p>　python 3.7.6</p><br>
     <p>使用モジュール</p><br>
-    <p>　pyxel</p><br>
-    </p>
+    <p><a href="https://github.com/kitao/pyxel">　pyxel</a></p><br>
   
   <li><h2>目的・動機</h2></li>
     <p>
