@@ -2,6 +2,8 @@ import pyxel
 import math
 import time
 import copy
+import random
+import time
 from enum import Enum,auto
 from threading import Thread
 
@@ -30,15 +32,17 @@ SCENE_CLEAR = 2
 PLAYER={0:[16,48],1:[16,16],2:[16,16],3:[16,16],4:[16,16],5:[32,16],\
         6:[48,16],7:[32,16],8:[16,16],9:[48,16],10:[16,32],\
         11:[16,16],12:[16,16],13:[16,96],14:[16,16],15:[16,16],\
-        16:[16,16],17:[16,16],}
+        16:[16,16],17:[16,16],18:[80,48],19:[16,16],20:[16,16],}
+
 BOX={0:[[32,48,0,0,0,0]],1:[[80,32,0,0,0,0]],2:[[64,32,0,0,0,0]],3:[[32,48,0,0,0,0]],4:[[32,64,0,0,0,0]],5:[[48,32,0,0,0,0]],\
         6:[[48,48,0,0,0,0]],7:[[32,48,0,0,0,0]],8:[[48,16,0,0,0,0],[48,96,0,0,0,0]],9:[[32,64,0,0,0,0],[80,64,0,0,0,0]],10:[[48,32,0,0,0,0]],\
         11:[[32,48,0,0,0,0]],12:[[32,32,0,0,0,0]],13:[[32,80,0,0,0,0]],14:[[80,32,0,0,0,0]],15:[[64,32,0,0,0,0]],\
-        16:[[64,32,0,0,0,0],[176,80,0,0,0,0]],17:[[64,32,0,0,0,0],[176,64,0,0,0,0]],}
+        16:[[64,32,0,0,0,0],[176,80,0,0,0,0]],17:[[64,32,0,0,0,0],[176,64,0,0,0,0]],18:[[48,48,0,0,0,0]],19:[[160,96,0,0,0,0]],20:[[48,16,0,0,0,0],[32,64,0,0,0,0]],}
+
 TILEMAP={0:[0,0,0,0,0,16,16,0],1:[0,0,0,16,0,16,16,0],2:[0,0,0,32,0,16,16,0],3:[0,0,0,48,0,16,16,0],4:[0,0,0,64,0,16,16,0],5:[0,0,0,80,0,16,16,0],\
         6:[0,0,0,96,0,16,16,0],7:[0,0,0,112,0,16,16,0],8:[0,0,0,128,0,16,16,0],9:[0,0,0,144,0,16,16,0],10:[0,0,0,160,0,16,16,0],\
         11:[0,0,0,176,0,16,16,0],12:[0,0,0,192,0,16,16,0],13:[0,0,0,208,0,16,16,0],14:[0,0,0,224,0,16,16,0],15:[0,0,0,240,0,16,16,0],\
-        16:[0,0,0,0,16,16,16,0],17:[0,0,0,32,16,16,16,0],}
+        16:[0,0,0,0,16,16,16,0],17:[0,0,0,32,16,16,16,0],18:[0,0,0,80,16,16,16,0],19:[0,0,0,96,16,16,16,0],20:[0,0,0,128,16,16,16,0],}
 SCREEN_SIZE=255
 
 class GAMEMODE(Enum):
@@ -62,11 +66,14 @@ class App:
         self.scene = GAMEMODE.Title
         
         #ステージカウント
-        self.stage_count=15
+        self.stage_count=19
 #        self.stage_count=-1
         self.player_img = 0
         self.clear=SCENE_PLAY
 
+        #時間系
+        self.start_time = int(time.time()*5)
+        self.clear_pause_time = 4
         self.title_frame_count=0
         #起動
         pyxel.run(self.update,self.draw)
@@ -183,8 +190,10 @@ class App:
         #プレイヤー変数
         self.player_x = list(PLAYER[self.stage_count])[0]
         self.player_y = list(PLAYER[self.stage_count])[1]
-        #クリア判定変数
+        #クリア判定関連変数
+        self.time_count = []
         self.clear_count=0
+
         time.sleep(2)
 #        pyxel.playm(0, loop=True)
         self.scene = GAMEMODE.Main
@@ -233,7 +242,7 @@ class App:
                     n[1] += self.move_y
 
         #次ステージ向かう系
-        if self.clear_count >= len(self.box_list)+90:
+        if len(self.time_count) == self.clear_pause_time:
             self.clear=SCENE_PLAY
             pyxel.stop()
             if self.stage_count+1 == len(BOX):
@@ -258,23 +267,61 @@ class App:
             self.draw_main()
         elif self.scene == GAMEMODE.End:
             self.draw_end()
+    
+    #時間差計算変数
+    #出てきた差分のカウントアップを早めたいときにlの数字を１より高くする。
+    def time_diff(self,i,l):
+        diff = (int(time.time()*l)-i)
+        return diff
+
+    #花火変数
+    #剰余を1から3で出力して花火を3段階で描画する。
+
+    #打ち上げと爆発の実装
+    #現状では爆発をループさせられない。
+    #アイディアとしてはtempの数を大きくして値の半分までを打ち上げ、残り半分を爆発の時間とする。
+    
+    #打ち上げ花火
+    def lanchset(self, x, y, a, c):
+        TEMP_FLAG = 0
+        temp = int(self.time_diff(self.start_time,5))%a
+        if temp > a/2:
+            self.pset(x, y-a, a/2 , c)
+        elif temp < a/2 :
+            pyxel.pset( x+int(random.random()*2.4), y-(temp+c)*3, (int(random.random()*10)*pyxel.frame_count) % 16)
+    #花火の火の輪
+    def pset(self, x, y, v, w):
+        temp = ((int(self.time_diff(self.start_time,5))%v)+w)*3
+        if temp >= 0:
+            for m in range(1,9):
+                r = ( 40*m/360 ) * (math.pi*2)
+                s = math.sin(r)
+                c = math.cos(r)
+                pyxel.pset(x+(temp*c), y+(temp*s), (int(random.random()*10)*pyxel.frame_count) % 16)
 
     def draw_title(self):
         pyxel.text(49, 36, "SOUKOBAN", pyxel.frame_count % 16)
         pyxel.text(45, 60, "PUSH ENTER", pyxel.frame_count % 16)
         #フレームカウントを利用してアニメーションさせることにした。
-        if self.title_frame_count <= 128:
-            self.title_frame_count += (pyxel.frame_count//30)%2
+        if self.title_frame_count <= 160:
+            self.title_frame_count += 1 if (pyxel.frame_count//30)%2 == 0 else 1
             pyxel.blt(self.title_frame_count,96,0,80,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
+            pyxel.blt(self.title_frame_count-16,96,0,96,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
+            pyxel.blt(self.title_frame_count-32,96,0,112,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
         else:
             self.title_frame_count=0
+
     def draw_skit(self):
         pyxel.text(50, 48, "STAGE:"+str(self.stage_count+2), 7)
     
     def draw_end(self):
+        self.pset(55,80,5,-1)
+        self.lanchset(50,90,16,0)
+        self.pset(70,85,5,-1)
+        self.lanchset(85,90,16,0)
         pyxel.text(48, 30, "ALL CLEAR!!", 7)
         pyxel.text(48, 48, "SUGOI DE ARIMASU", 7)
-        pyxel.blt(96, 96,0,64,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
+        pyxel.blt(60, 96,0,64,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
 
     #DRAW_MAIN系
 
@@ -294,7 +341,8 @@ class App:
         pyxel.bltm(*self.tilemap_list)
         if self.clear == SCENE_CLEAR:
             pyxel.text(43,56,"STAGE CLEAR!",pyxel.frame_count % 16)
-            self.clear_count += 1
+            if self.time_diff(self.start_time,1)%self.clear_pause_time not in self.time_count:
+                self.time_count.append(self.time_diff(self.start_time,1)%self.clear_pause_time)
         for i in self.box_list:
             if pyxel.tilemap(0).get(round(i[0]/8)+self.stage_pogition_x,round(i[1]/8)+self.stage_pogition_y) == 130:
                 if i[3] == 0:
