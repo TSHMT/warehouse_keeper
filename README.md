@@ -4,9 +4,9 @@
   <li><h2>使用技術</h2></li>
     <p>
       使用ソフト<br>
-      python 3.7.6<br>
-      使用モジュール</p><br>
-      pyxel<br>
+       python 3.7.6<br>
+      使用モジュール<br>
+       pyxel<br>
     </p>
   <li><h2>目的・動機</h2></li>
     <p>
