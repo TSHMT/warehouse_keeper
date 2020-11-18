@@ -3,7 +3,8 @@
     <p>
       <h3>倉庫キーパー</h3><br>
       <a>&emsp;倉庫の荷物をゴールまで運ぶゲームです。</a><br>
-      <a><img src="/TSHMT/warehouse_keeper/blob/main/screenshots/gif_end.gif"></a>
+      <a>
+        <img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_title.gif" alt="タイトル.gif" title="タイトル"></a>
     </p>
   <br>
   <li><h2>使用技術</h2></li>
