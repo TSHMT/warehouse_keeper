@@ -4,11 +4,11 @@
       <h3>倉庫キーパー</h3><br>
       <a>&emsp;倉庫の荷物をゴールまで運ぶゲームです。</a><br>
       <br>  
-      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_title.gif" alt="タイトル.gif" title="タイトル" width="48%" style="max-width:100%;></a>
-      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_stage1.gif" alt="ステージ１.gif" title="ステージ１" width="48%" style="max-width:100%;></a>
+      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_title.gif" alt="タイトル.gif" title="タイトル" width="48%" style="max-width:100%;"></a>
+      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_stage1.gif" alt="ステージ１.gif" title="ステージ１" width="48%" style="max-width:100%;"></a>
       <br>
-      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_stage2.gif" alt="ステージ2.gif" title="ステージ2" width="48%" style="max-width:100%;></a>
-      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_end.gif" alt="エンド.gif" title="エンド" width="48%" style="max-width:100%;></a>  
+      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_stage2.gif" alt="ステージ2.gif" title="ステージ2" width="48%" style="max-width:100%;"></a>
+      <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_end.gif" alt="エンド.gif" title="エンド" width="48%" style="max-width:100%;"></a>  
     </p>
   <br>
   <li><h2>使用技術</h2></li>
