@@ -18,6 +18,13 @@
     <a href="https://github.com/kitao/pyxel">&emsp;pyxel</a><br>
     <a>&emsp;＞本ゲームを遊ぶにはpyxelと関連パッケージのインストールが必要です<br>&emsp;&emsp;リンク先をご参照ください。</a><br>
     <br>
+  <li><h2>アプリケーション名</h2></li>
+  <br>
+    <p>
+      <a>移動：十字キー</a><br>
+      <a>スペース：ステージの最初にもどる</a><br>
+      <a>終了：q</a><br>
+    </p>
   <li><h2>目的・動機</h2></li>
     <p>
       子供が迷路好きなので、知育ゲームを作ろう、<br>
