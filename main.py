@@ -7,6 +7,30 @@ import time
 from enum import Enum,auto
 from threading import Thread
 
+"""
+MIT License
+
+Copyright (c) 2018 Takashi Kitao
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
 #
 #TODO
 #
@@ -72,7 +96,7 @@ class App:
         self.clear=SCENE_PLAY
 
         #時間系
-        self.start_time = int(time.time()*5)
+        self.start_time = int(time.time())
         self.clear_pause_time = 4
         self.title_frame_count=0
         #起動
@@ -177,8 +201,6 @@ class App:
         #変数の初期化をここで行う。
         #各種変数のセット
         self.stage_count+=1
-#        self.stage_pogition_x = (self.stage_count-((self.stage_count//16)*16))*16
-#        self.stage_pogition_y = (self.stage_count//16)*16
         self.box_list = copy.deepcopy(BOX[self.stage_count])
         self.tilemap_list = copy.deepcopy(TILEMAP[self.stage_count])
         self.stage_pogition_x = copy.copy(self.tilemap_list[3])
@@ -195,7 +217,7 @@ class App:
         self.clear_count=0
 
         time.sleep(2)
-#        pyxel.playm(0, loop=True)
+        pyxel.playm(0, loop=True)
         self.scene = GAMEMODE.Main
     
     def update_end(self):
@@ -221,13 +243,9 @@ class App:
                 self.player_img = 1
                 self.move(0,-1)
             elif pyxel.btn(pyxel.KEY_RIGHT):
-#                print(math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x)
-#                print(self.stage_pogition_x)
                 self.player_img = 2
                 self.move(1,0)
             elif pyxel.btn(pyxel.KEY_LEFT):
-#                print(math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x)
-#                print(self.stage_pogition_x)
                 self.player_img = 3
                 self.move(-1,0)
 
@@ -242,7 +260,7 @@ class App:
                     n[1] += self.move_y
 
         #次ステージ向かう系
-        if len(self.time_count) == self.clear_pause_time:
+        if self.clear_pause_time == len(self.time_count):
             self.clear=SCENE_PLAY
             pyxel.stop()
             if self.stage_count+1 == len(BOX):
@@ -251,8 +269,6 @@ class App:
                 self.scene = GAMEMODE.End
             else:
                 self.scene = GAMEMODE.Skit
-
-
 
     #
     #画面描画系関数
@@ -269,29 +285,27 @@ class App:
             self.draw_end()
     
     #時間差計算変数
-    #出てきた差分のカウントアップを早めたいときにlの数字を１より高くする。
-    def time_diff(self,i,l):
-        diff = (int(time.time()*l)-i)
+    #
+    #花火の爆発スピードをあげる：lの数字を１より高くする。
+    def time_diff(self,detonation_velocity, start_time, coefficient):
+        diff = (int(time.time()* detonation_velocity )-start_time * coefficient)
         return diff
 
     #花火変数
+
     #剰余を1から3で出力して花火を3段階で描画する。
 
-    #打ち上げと爆発の実装
-    #現状では爆発をループさせられない。
-    #アイディアとしてはtempの数を大きくして値の半分までを打ち上げ、残り半分を爆発の時間とする。
-    
     #打ち上げ花火
-    def lanchset(self, x, y, a, c):
-        TEMP_FLAG = 0
-        temp = int(self.time_diff(self.start_time,5))%a
-        if temp > a/2:
-            self.pset(x, y-a, a/2 , c)
-        elif temp < a/2 :
-            pyxel.pset( x+int(random.random()*2.4), y-(temp+c)*3, (int(random.random()*10)*pyxel.frame_count) % 16)
+    def lanchset(self, x, y, explosion_cycle, delay):
+        temp = int(self.time_diff(5,self.start_time,5))% explosion_cycle
+        if temp > explosion_cycle / 2:
+            self.pset(x, y-explosion_cycle, explosion_cycle/2, delay)
+        elif temp < explosion_cycle/2 :
+            pyxel.pset( x+int(random.random()*2.4), y-( temp + delay )*3, (int(random.random()*10)*pyxel.frame_count) % 16)
+
     #花火の火の輪
-    def pset(self, x, y, v, w):
-        temp = ((int(self.time_diff(self.start_time,5))%v)+w)*3
+    def pset(self, x, y, explosion_cycle, delay):
+        temp = ((int(self.time_diff(5,self.start_time,5))% explosion_cycle )+ delay )*3
         if temp >= 0:
             for m in range(1,9):
                 r = ( 40*m/360 ) * (math.pi*2)
@@ -313,7 +327,7 @@ class App:
 
     def draw_skit(self):
         pyxel.text(50, 48, "STAGE:"+str(self.stage_count+2), 7)
-    
+
     def draw_end(self):
         self.pset(55,80,5,-1)
         self.lanchset(50,90,16,0)
@@ -324,25 +338,24 @@ class App:
         pyxel.blt(60, 96,0,64,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
 
     #DRAW_MAIN系
+    #クリア判定のロジック
 
-    #クリア判定のロジック    
-    #通常時はクリアカウントで制限。
-    #クリアカウントが規定数に達するとロックカウントが足され続ける。
-    #update_main側でクリアカウントが一定のカウントに達したのを検知して次のステージへ向かう。
-    
-    #本当はフラグが立ったら一定時間の間クリアテキストを表示して、次ステージに向かうようにしたい。
-    #スレッディングとか試みたがうまくいかなかった。。。。
-
-    #ボックスがチェックポイントに置かれたかどうかの判定
-    #リストの４番目の要素をフラグにして管理。
+    #darw_main関数での処理
+    #＞ボックスがゴールに置かれたら、クリアカウントをアップ。さらに箱のフラグをチェック(箱のリスト４番目の要素)。
+    #＞クリアカウントが箱リストの数に達したら、クリアフラグをチェック。
+    #＞チェック後処理を行う
+    #update_main関数へ処理を移す。
+    #＞ステージカウントUP、モードリセットを行う
 
     def draw_main(self):
         #MAPの読込み
         pyxel.bltm(*self.tilemap_list)
+        #クリアフラグチェック後の処理
         if self.clear == SCENE_CLEAR:
             pyxel.text(43,56,"STAGE CLEAR!",pyxel.frame_count % 16)
-            if self.time_diff(self.start_time,1)%self.clear_pause_time not in self.time_count:
-                self.time_count.append(self.time_diff(self.start_time,1)%self.clear_pause_time)
+            if self.time_diff(1,self.start_time,1)%self.clear_pause_time not in self.time_count:
+                self.time_count.append(self.time_diff(1,self.start_time,1)%self.clear_pause_time)
+        #箱がゴールに辿り着いたときの処理分岐
         for i in self.box_list:
             if pyxel.tilemap(0).get(round(i[0]/8)+self.stage_pogition_x,round(i[1]/8)+self.stage_pogition_y) == 130:
                 if i[3] == 0:
@@ -360,6 +373,7 @@ class App:
                     i[5] = 1
                 else:
                     pyxel.blt(i[0],i[1],0,0,32,16,16,0)
+        #十字キーの入力に合わせて描画するプレイヤーイメージを変更
         if self.player_img <= 1:
             pyxel.blt(self.player_x, self.player_y,0,16*self.player_img,0, 16 if (pyxel.frame_count//30)%2 == 0 else -16,16,0)
         else:
