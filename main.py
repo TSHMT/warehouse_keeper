@@ -35,11 +35,6 @@ SOFTWARE.
 #TODO
 #
 
-#★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-#キャラクターの画面遷移に伴い、ボックスの遷移も必要であれば行う。
-#必要でなければ、新しい画面には描画せず、元の画面に戻ったときに行うようにする。
-#★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
-
 #
 #命名ルール
 #
@@ -47,8 +42,10 @@ SOFTWARE.
 #2.クラス名は1文字目のみ大文字
 #3.ローカル関数、ローカル変数は全て小文字
 
-#グローバル変数の設定
-#ボックスステータスは[X,Y,移動フラグ,ゴールフラグ]、タイルマップは後々に１ステージ２画面構成になるかもしれないので、辞書にした。
+#グローバル変数の説明
+#プレイヤー辞書のキーバリューは{ステージ番号：[開始時X座標、開始時Y座標]}
+#ボックス辞書のキーバリューは{ステージ番号：[X,Y,移動フラグ,ゴールフラグ,X座標欄外フラグ,Y座標欄外フラグ]}
+#タイルマップ辞書のキーバリューは{ステージ番号：[pyxel.bltmの引数仕様に習う]}。１ステージ２画面構成を考慮して辞書にした。
 
 SCENE_NEXT = 0
 SCENE_PLAY = 1
@@ -90,13 +87,11 @@ class App:
         self.scene = GAMEMODE.Title
         
         #ステージカウント
-        self.stage_count=19
-#        self.stage_count=-1
+        self.stage_count=-1
         self.player_img = 0
         self.clear=SCENE_PLAY
 
         #時間系
-        self.start_time = int(time.time())
         self.clear_pause_time = 4
         self.title_frame_count=0
         #起動
@@ -118,7 +113,8 @@ class App:
                 self.move_count=0
 
             #画面スクロール系
-            #スクロール後、プレイヤーと箱の座標をどう処理するか
+            #スクロール後、プレイヤーと箱の座標をどう処理するか決める。
+            #
             if (math.floor(self.player_x/8)+self.move_x*2+self.stage_pogition_x) >= self.stage_pogition_x+16:
                 self.tilemap_list[3] += 16
                 self.stage_pogition_x += 16
@@ -178,7 +174,7 @@ class App:
                             i[2]=0
                             self.move_count=0
                             break
-                    #箱を押していない時
+                #箱を押していない時
                 else:
                     i[2] = 0
 
@@ -215,6 +211,7 @@ class App:
         #クリア判定関連変数
         self.time_count = []
         self.clear_count=0
+        self.start_time = int(time.time())
 
         time.sleep(2)
         pyxel.playm(0, loop=True)
@@ -285,7 +282,6 @@ class App:
             self.draw_end()
     
     #時間差計算変数
-    #
     #花火の爆発スピードをあげる：lの数字を１より高くする。
     def time_diff(self,detonation_velocity, start_time, coefficient):
         diff = (int(time.time()* detonation_velocity )-start_time * coefficient)
@@ -333,8 +329,8 @@ class App:
         self.lanchset(50,90,16,0)
         self.pset(70,85,5,-1)
         self.lanchset(85,90,16,0)
-        pyxel.text(48, 30, "ALL CLEAR!!", 7)
-        pyxel.text(48, 48, "SUGOI DE ARIMASU", 7)
+        pyxel.text(44, 30, "ALL CLEAR!!", 7)
+        pyxel.text(36, 48, "KIMI HA SUGOI !!", 7)
         pyxel.blt(60, 96,0,64,0 if (pyxel.frame_count//30)%2 == 0 else 16,16,16,0)
 
     #DRAW_MAIN系
