@@ -310,7 +310,7 @@ class App:
                 pyxel.pset(x+(temp*c), y+(temp*s), (int(random.random()*10)*pyxel.frame_count) % 16)
 
     def draw_title(self):
-        pyxel.text(49, 36, "SOUKOBAN", pyxel.frame_count % 16)
+        pyxel.text(41, 36, "SOUKO KEEPER", pyxel.frame_count % 16)
         pyxel.text(45, 60, "PUSH ENTER", pyxel.frame_count % 16)
         #フレームカウントを利用してアニメーションさせることにした。
         if self.title_frame_count <= 160:

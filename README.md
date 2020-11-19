@@ -11,12 +11,12 @@
       <a><img src="https://github.com/TSHMT/warehouse_keeper/blob/main/screenshots/gif_end.gif" alt="エンド.gif" title="エンド" width="48%" style="max-width:100%;"></a>  
     </p>
   <br>
-  <li><h2>使用技術</h2></li>
-    <a>使用ソフト</a><br>
+  <li><h2>使用した技術要素</h2></li>
+    <a>ソフト</a><br>
     <a>&emsp;python 3.7.6</a><br>
-    <a>使用モジュール</a><br>
+    <a>モジュール</a><br>
     <a href="https://github.com/kitao/pyxel">&emsp;pyxel</a><br>
-    <a>&emsp;＞本ゲームを遊ぶにはpyxelと関連パッケージのインストールが必要です<br>&emsp;&emsp;リンク先をご参照ください。</a><br>
+    <a>&emsp;＞本ゲームを遊ぶにはpythonとpyxel、関連パッケージのインストールが必要です<br>&emsp;&emsp;詳細はリンク先をご参照ください。</a><br>
     <br>
   <li><h2>遊び方</h2></li>
   <br>
@@ -34,12 +34,11 @@
       <a>ステージの最初にもどる：スペース</a><br>
       <a>終了：q</a><br>
     </p>
-  <li><h2>目的・動機</h2></li>
+  <li><h2>作った経緯</h2></li>
     <p>
       子供が迷路好きなので、知育ゲームを作ろう、<br>
       どうせなら数学的な処理も盛り込んでみようと思い作りました。<br>
     </p>
-  
   <li><h2>開発して面白かったこと</h2></li>
     <p>
       ユーザーである子供にテストプレイをしてもらい<br>
